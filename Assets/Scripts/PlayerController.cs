@@ -39,14 +39,19 @@ public class PlayerController : MonoBehaviour {
         {
             moveUp = 0f;
         }
-
+        
         rb.AddForce(new Vector3(0f, moveUp, 0f));
+        
+        // NEW assignment: create IEnumerator AutoPilot() to collect all the pickups
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            StartCoroutine(AutoPilot());
+        }
 
         if (transform.position.y < -10f)
         { 
             SceneManager.LoadScene("MiniGame"); //Load scene called Game
         }
-
         if (Input.GetKey("escape"))
         {
             Application.Quit();
@@ -88,6 +93,11 @@ public class PlayerController : MonoBehaviour {
                 }
             }
         }
+    }
+
+    IEnumerator AutoPilot()
+    {
+        yield return null;
     }
 
     void SetCountText()
