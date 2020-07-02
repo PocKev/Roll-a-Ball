@@ -11,24 +11,37 @@ public class PlayerController : MonoBehaviour {
     public Text countText;
     //public Text winText;
     public GameObject game;
+    private GameObject ChildGameObject;
+    public GameObject ParentGameObject;
 
     private Rigidbody rb;
     private int count;
     private bool inAir;
 
-    void Start ()
+
+
+    public float p=.16f;
+
+    private int checker = 0;
+
+  
+
+    void Start()
     {
         rb = GetComponent<Rigidbody>();
         count = 0;
+        checker = 0;
         SetCountText();
         //winText.text = "";
         //Debug.Log("Count: " + game.GetComponent<GameHandler>().pickUpsLeft);
-        
+
+
         inAir = false;
     }
 
     private void Update()
     {
+        
         float moveUp = 0f;
 
         if (Input.GetButtonDown("Jump") && !inAir)
@@ -39,17 +52,21 @@ public class PlayerController : MonoBehaviour {
         {
             moveUp = 0f;
         }
-        
+
         rb.AddForce(new Vector3(0f, moveUp, 0f));
+
+        ParentGameObject = GameObject.FindGameObjectWithTag("Drop It");
+      
         
         // NEW assignment: create IEnumerator AutoPilot() to collect all the pickups
         if (Input.GetKeyDown(KeyCode.F))
         {
-            StartCoroutine(AutoPilot());
+            
+            StartCoroutine(AutoPilot(ParentGameObject));
         }
 
         if (transform.position.y < -10f)
-        { 
+        {
             SceneManager.LoadScene("MiniGame"); //Load scene called Game
         }
         if (Input.GetKey("escape"))
@@ -57,6 +74,37 @@ public class PlayerController : MonoBehaviour {
             Application.Quit();
         }
     }
+
+    IEnumerator AutoPilot(GameObject ParentGameObject)
+    {
+
+
+        while (checker < 12) {
+            print(ParentGameObject.transform.GetChild(checker).name);
+            while (transform.position != ParentGameObject.transform.GetChild(checker).gameObject.transform.position)
+            {
+                if (ParentGameObject.transform.GetChild(checker).gameObject.activeSelf)
+                {
+                    moveTo(ParentGameObject.transform.GetChild(checker).gameObject);
+                    yield return null;
+                }
+                else
+                {
+                    checker++;
+                    yield return null;
+                }
+            }
+        }
+
+    }
+
+
+    void moveTo(GameObject stupidity)
+    {
+        Vector3 movement = new Vector3(p*(stupidity.transform.position.x - transform.position.x), 0f, p*(stupidity.transform.position.z - transform.position.z));
+        rb.AddForce(movement * speed);
+    }
+  
 
     void FixedUpdate ()
     {
@@ -78,6 +126,7 @@ public class PlayerController : MonoBehaviour {
         if (other.gameObject.CompareTag("Pick Up"))
         {
             other.gameObject.SetActive(false);
+
             count++;
             SetCountText();
 
@@ -95,10 +144,6 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    IEnumerator AutoPilot()
-    {
-        yield return null;
-    }
 
     void SetCountText()
     {
