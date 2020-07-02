@@ -18,9 +18,12 @@ public class PlayerController : MonoBehaviour {
     private int count;
     private bool inAir;
 
+    private float xForce, prevXError, xError;
+    private float zForce, prevZError, zError;
 
 
     public float p=.16f;
+    public float d = 0f;
 
     private int checker = 0;
 
@@ -79,30 +82,38 @@ public class PlayerController : MonoBehaviour {
     {
 
 
-        while (checker < 12) {
+        while (checker < ParentGameObject.transform.childCount) {
             print(ParentGameObject.transform.GetChild(checker).name);
-            while (transform.position != ParentGameObject.transform.GetChild(checker).gameObject.transform.position)
-            {
+           
                 if (ParentGameObject.transform.GetChild(checker).gameObject.activeSelf)
                 {
-                    moveTo(ParentGameObject.transform.GetChild(checker).gameObject);
-                    yield return null;
+                    StartCoroutine(moveTo(ParentGameObject.transform.GetChild(checker).gameObject));
                 }
                 else
                 {
                     checker++;
-                    yield return null;
                 }
+                yield return null;
             }
-        }
-
+        StopCoroutine(AutoPilot(ParentGameObject));
+        yield return null;
     }
 
 
-    void moveTo(GameObject stupidity)
+    IEnumerator moveTo(GameObject TargetObject)
     {
-        Vector3 movement = new Vector3(p*(stupidity.transform.position.x - transform.position.x), 0f, p*(stupidity.transform.position.z - transform.position.z));
-        rb.AddForce(movement * speed);
+        if (transform.position != ParentGameObject.transform.GetChild(checker).gameObject.transform.position)
+        {
+            xError = TargetObject.transform.position.x - transform.position.x;
+            zError = TargetObject.transform.position.z - transform.position.z;
+            xForce = p * (xError) + d * (xError - prevXError) / (float)Time.deltaTime;
+            zForce = p * (zError) + d * (zError - prevZError) / (float)Time.deltaTime;
+            Vector3 movement = new Vector3(xForce, 0f, zForce);
+            rb.AddForce(movement * speed);
+            prevXError = xError;
+            prevZError = zError;
+        }
+        yield return null;
     }
   
 
