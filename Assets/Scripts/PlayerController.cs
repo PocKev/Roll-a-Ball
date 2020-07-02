@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour {
     //public Text winText;
     public GameObject game;
     private GameObject ChildGameObject;
-    public GameObject ParentGameObject;
+    private GameObject ParentGameObject;
 
     private Rigidbody rb;
     private int count;
