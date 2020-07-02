@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour {
     public float p=.16f;
     public float d = 0f;
 
-    private int checker = 0;
+    private int checker = 10;
 
   
 
@@ -82,19 +82,20 @@ public class PlayerController : MonoBehaviour {
     {
 
 
-        while (checker < ParentGameObject.transform.childCount) {
+        while (checker < ParentGameObject.transform.childCount)
+        {
             print(ParentGameObject.transform.GetChild(checker).name);
-           
-                if (ParentGameObject.transform.GetChild(checker).gameObject.activeSelf)
-                {
-                    StartCoroutine(moveTo(ParentGameObject.transform.GetChild(checker).gameObject));
-                }
-                else
-                {
-                    checker++;
-                }
-                yield return null;
+
+            if (ParentGameObject.transform.GetChild(checker).gameObject.activeSelf)
+            {
+                StartCoroutine(moveTo(ParentGameObject.transform.GetChild(checker).gameObject));
             }
+            else
+            {
+                checker++;
+            }
+            yield return null;
+        }
         StopCoroutine(AutoPilot(ParentGameObject));
         yield return null;
     }
